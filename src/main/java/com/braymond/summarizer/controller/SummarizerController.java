@@ -21,8 +21,8 @@ public class SummarizerController {
         if (username == null || username.isBlank()) {
             return ResponseEntity.badRequest().body(null);
         }
-        try {
-            GitHubSummary summary = summarizerService.summarizeProfile(username);
+         try {
+            GitHubSummary summary = summarizerService.summarizeProfileSync(username);
             return ResponseEntity.ok(summary);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(null);

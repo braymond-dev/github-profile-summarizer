@@ -34,4 +34,13 @@ public class SummarizerService {
 
         return summaryFuture.get();
     }
+
+    /**
+     * Synchronous version of profile summarization, useful for debugging JSON decoding without async threads.
+     */
+    public GitHubSummary summarizeProfileSync(String username) throws Exception {
+        GitHubUser user = githubClient.getUser(username).get();
+        List<GitHubRepo> repos = githubClient.getUserRepos(username).get();
+        return GitHubSummary.from(user, repos);
+    }
 }
