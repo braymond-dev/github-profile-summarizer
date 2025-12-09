@@ -1,4 +1,4 @@
-package com.braymond.summarizer;
+package com.braymond.summarizer.controller;
 
 import java.util.Map;
 
