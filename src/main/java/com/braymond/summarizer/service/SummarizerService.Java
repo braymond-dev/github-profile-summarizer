@@ -4,6 +4,8 @@ import com.braymond.summarizer.client.GitHubClient;
 import com.braymond.summarizer.model.GitHubRepo;
 import com.braymond.summarizer.model.GitHubSummary;
 import com.braymond.summarizer.model.GitHubUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -14,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class SummarizerService {
+
+    private static final Logger log = LoggerFactory.getLogger(SummarizerService.class);
 
     private final GitHubClient githubClient;
     private final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
@@ -27,8 +31,10 @@ public class SummarizerService {
     {
         GitHubSummary cached = getCached(username);
         if (cached != null) {
+            log.info("cache hit for user={}", username);
             return cached;
         }
+        log.info("cache miss for user={}, fetching", username);
 
         CompletableFuture<GitHubUser> user = githubClient.getUser(username);
         CompletableFuture<List<GitHubRepo>> repos = githubClient.getUserRepos(username);
@@ -39,6 +45,7 @@ public class SummarizerService {
                 }
         );
         GitHubSummary summary = summaryFuture.get();
+        log.info("caching summary for user={}", username);
         cache.put(username, new CacheEntry(summary, Instant.now()));
         return summary;
     }
