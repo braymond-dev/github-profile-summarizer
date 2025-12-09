@@ -27,9 +27,9 @@ public class SummarizerController {
             return ResponseEntity.ok(summary);
         } catch (Exception e) {
             Throwable cause = e.getCause();
-            if (cause instanceof WebClientResponseException.NotFound) {
-                //pass-through a 404 to the user
-                return ResponseEntity.status(((WebClientResponseException.NotFound) cause).getStatusCode()).body(null);
+            if (cause instanceof WebClientResponseException wcre && wcre.getStatusCode().value() == 404) {
+                // pass-through a 404 to the user
+                return ResponseEntity.status(wcre.getStatusCode()).body(null);
             }
             return ResponseEntity.internalServerError().body(null);
         }
