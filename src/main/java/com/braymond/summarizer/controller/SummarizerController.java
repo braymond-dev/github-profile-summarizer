@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @RestController
 public class SummarizerController {
@@ -16,21 +17,21 @@ public class SummarizerController {
         this.summarizerService = summarizerService;
     }
 
-    @GetMapping("/username")
+    @GetMapping("/summary")
     public ResponseEntity<GitHubSummary> summarize(@RequestParam("username") String username) {
         if (username == null || username.isBlank()) {
             return ResponseEntity.badRequest().body(null);
         }
-         try {
+        try {
             GitHubSummary summary = summarizerService.summarizeProfile(username);
             return ResponseEntity.ok(summary);
         } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof WebClientResponseException.NotFound) {
+                return ResponseEntity.status(((WebClientResponseException.NotFound) cause).getStatusCode()).body(null);
+            }
             return ResponseEntity.internalServerError().body(null);
         }
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "hello";
-    }
 }
