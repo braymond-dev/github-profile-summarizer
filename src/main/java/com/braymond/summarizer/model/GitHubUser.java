@@ -25,7 +25,7 @@ public record GitHubUser(
         String receivedEventsUrl,
         String type,
         String userViewType,
-        boolean siteAdmin,
+        Boolean siteAdmin,
         String name,
         String company,
         String blog,

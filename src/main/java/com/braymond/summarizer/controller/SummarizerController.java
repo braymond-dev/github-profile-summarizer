@@ -1,7 +1,7 @@
 package com.braymond.summarizer.controller;
 
-import java.util.Map;
-
+import com.braymond.summarizer.model.GitHubSummary;
+import com.braymond.summarizer.service.SummarizerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,16 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SummarizerController {
 
-    @GetMapping("/username")
-    public ResponseEntity<Map<String, String>> summarize(@RequestParam("username") String username) {
-        if (username == null || username.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "username is required"));
-        }
+    private final SummarizerService summarizerService;
 
-        // Placeholder response until GitHub profile summarization is wired up.
-        return ResponseEntity.ok(Map.of(
-                "username", username,
-                "summary", "GitHub profile summary not implemented yet"));
+    public SummarizerController(SummarizerService summarizerService) {
+        this.summarizerService = summarizerService;
+    }
+
+    @GetMapping("/username")
+    public ResponseEntity<GitHubSummary> summarize(@RequestParam("username") String username) {
+        if (username == null || username.isBlank()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        try {
+            GitHubSummary summary = summarizerService.summarizeProfile(username);
+            return ResponseEntity.ok(summary);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
     }
 
     @GetMapping("/hello")

@@ -1,6 +1,7 @@
 package com.braymond.summarizer.client;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -8,8 +9,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.braymond.summarizer.model.GitHubRepo;
 import com.braymond.summarizer.model.GitHubUser;
-
-import reactor.core.publisher.Mono;
 
 @Component
 public class GitHubClient {
@@ -24,20 +23,22 @@ public class GitHubClient {
                 .build();
     }
 
-    public Mono<GitHubUser> getUser(String username) {
+    public CompletableFuture<GitHubUser> getUser(String username) {
         return webClient
                 .get()
                 .uri("/users/{username}", username)
                 .retrieve()
-                .bodyToMono(GitHubUser.class);
+                .bodyToMono(GitHubUser.class)
+                .toFuture();
     }
 
-    public Mono<List<GitHubRepo>> getUserRepos(String username) {
+    public CompletableFuture<List<GitHubRepo>> getUserRepos(String username) {
         return webClient
                 .get()
                 .uri("/users/{username}/repos", username)
                 .retrieve()
                 .bodyToFlux(GitHubRepo.class)
-                .collectList();
+                .collectList()
+                .toFuture();
     }
 }
