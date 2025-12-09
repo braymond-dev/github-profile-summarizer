@@ -20,23 +20,19 @@ public class SummarizerService {
 
     public GitHubSummary summarizeProfile(String username) throws Exception
     {
-
         CompletableFuture<GitHubUser> user = githubClient.getUser(username);
         CompletableFuture<List<GitHubRepo>> repos = githubClient.getUserRepos(username);
 
-
         CompletableFuture<GitHubSummary> summaryFuture = user.thenCombine(repos,
-
                 (completeUser, completeRepos) -> {
                     return GitHubSummary.from(completeUser, completeRepos);
                 }
         );
-
         return summaryFuture.get();
     }
 
     /**
-     * Synchronous version of profile summarization, useful for debugging JSON decoding without async threads.
+     * Synchronous version for debugging
      */
     public GitHubSummary summarizeProfileSync(String username) throws Exception {
         GitHubUser user = githubClient.getUser(username).get();

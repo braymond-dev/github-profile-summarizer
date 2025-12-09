@@ -22,7 +22,7 @@ public class SummarizerController {
             return ResponseEntity.badRequest().body(null);
         }
          try {
-            GitHubSummary summary = summarizerService.summarizeProfileSync(username);
+            GitHubSummary summary = summarizerService.summarizeProfile(username);
             return ResponseEntity.ok(summary);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(null);
